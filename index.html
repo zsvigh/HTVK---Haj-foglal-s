@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Hajók Naptár - MVP</title>
+    <title>Hajók Naptár - MVP Tier 2</title>
     <style>
         * {
             margin: 0;
@@ -65,12 +65,47 @@
             border-radius: 4px;
         }
 
+        .tabs {
+            display: flex;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 6px 8px;
+            border: none;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: #667eea;
+        }
+
         .main-content {
             display: flex;
             flex-direction: column;
             flex: 1;
             min-height: 0;
             gap: 8px;
+        }
+
+        .tab-content {
+            display: none;
+            flex: 1;
+            overflow: hidden;
+            flex-direction: column;
+        }
+
+        .tab-content.active {
+            display: flex;
         }
 
         .calendar-section {
@@ -83,6 +118,85 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             position: relative;
             min-height: 0;
+        }
+
+        .filter-panel {
+            background: white;
+            padding: 8px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            flex-shrink: 0;
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .filter-select {
+            flex: 1;
+            min-width: 120px;
+            padding: 6px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 10px;
+            cursor: pointer;
+        }
+
+        .ship-info-panel {
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .ship-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .ship-card:active {
+            transform: scale(0.98);
+        }
+
+        .ship-card-title {
+            font-weight: 700;
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+
+        .ship-card-type {
+            font-size: 10px;
+            opacity: 0.9;
+            margin-bottom: 4px;
+        }
+
+        .ship-card-capacity {
+            font-size: 9px;
+            opacity: 0.8;
+        }
+
+        .ship-details {
+            background: rgba(0,0,0,0.05);
+            padding: 8px;
+            border-radius: 4px;
+            margin-top: 4px;
+            font-size: 9px;
+            line-height: 1.4;
+        }
+
+        .ship-link {
+            color: white;
+            text-decoration: underline;
+            font-size: 9px;
+            margin-top: 4px;
+            display: inline-block;
         }
 
         .calendar-header {
@@ -171,25 +285,8 @@
         .day-selected {
             background: #FF9800 !important;
             color: white;
-            border: 1px solid #F57C00;
-            box-shadow: 0 0 6px rgba(255,152,0,0.4);
-        }
-
-        .day-start {
-            background: #2196F3 !important;
-            color: white;
-            border-left: 3px solid #1976D2;
-        }
-
-        .day-range {
-            background: #BBDEFB !important;
-            color: #1565C0;
-        }
-
-        .day-end {
-            background: #2196F3 !important;
-            color: white;
-            border-right: 3px solid #1976D2;
+            border: 2px solid #F57C00;
+            box-shadow: 0 0 8px rgba(255,152,0,0.4);
         }
 
         .dropdown-menu {
@@ -224,12 +321,6 @@
 
         .dropdown-item:active {
             background: #f0f0f0;
-        }
-
-        .dropdown-item.unavailable {
-            color: #ccc;
-            cursor: not-allowed;
-            background: #fafafa;
         }
 
         .footer {
@@ -352,14 +443,100 @@
             cursor: not-allowed;
         }
 
-        .price-tag {
-            display: inline-block;
-            background: #FF6B6B;
-            color: white;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-size: 9px;
+        .booking-history {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            overflow-y: auto;
+            padding: 8px;
+        }
+
+        .booking-card {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .booking-card-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
+
+        .booking-card-ship {
             font-weight: 700;
+            font-size: 12px;
+            color: #667eea;
+        }
+
+        .booking-card-status {
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .booking-card-status.active {
+            color: #4CAF50;
+        }
+
+        .booking-card-dates {
+            font-size: 10px;
+            color: #666;
+            margin-bottom: 6px;
+        }
+
+        .booking-card-details {
+            font-size: 9px;
+            color: #999;
+            margin-bottom: 6px;
+            line-height: 1.4;
+        }
+
+        .booking-card-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .booking-btn {
+            flex: 1;
+            padding: 6px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 9px;
+            font-weight: 600;
+            cursor: pointer;
+            background: #f5f5f5;
+            color: #333;
+            transition: all 0.2s ease;
+        }
+
+        .booking-btn:active {
+            background: #e0e0e0;
+        }
+
+        .booking-btn.danger {
+            color: #FF6B6B;
+            border-color: #FF6B6B;
+        }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .empty-state-text {
+            font-size: 12px;
         }
 
         ::-webkit-scrollbar {
@@ -400,7 +577,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="header-title">⛵ Hajók Naptár - MVP</div>
+            <div class="header-title">⛵ Hajók Naptár - MVP Tier 2</div>
             <div class="header-subtitle">Június – augusztus 2026</div>
             <div class="header-stats">
                 <div class="stat-item">Bal21: <span id="stat-balaton">0</span></div>
@@ -409,62 +586,84 @@
             </div>
         </div>
 
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="calendar">📅 Naptár</button>
+            <button class="tab-btn" data-tab="history">📋 Foglalásaim</button>
+        </div>
+
         <div class="main-content">
-            <div class="calendar-section">
-                <div class="calendar-header">
-                    <div class="weekday-header">
-                        <div class="weekday">H</div>
-                        <div class="weekday">K</div>
-                        <div class="weekday">Sz</div>
-                        <div class="weekday">Cs</div>
-                        <div class="weekday">P</div>
-                        <div class="weekday">Szom</div>
-                        <div class="weekday">V</div>
+            <!-- NAPTÁR TAB -->
+            <div class="tab-content active" id="calendar-tab">
+                <div class="filter-panel">
+                    <select class="filter-select" id="capacity-filter">
+                        <option value="">Max utaslét</option>
+                        <option value="4">4+ fő</option>
+                        <option value="6">6 fő</option>
+                    </select>
+                </div>
+
+                <div class="ship-info-panel" id="ship-info-panel">
+                    <div class="ship-card" id="selected-ship-card" style="display: none;"></div>
+                </div>
+
+                <div class="calendar-section">
+                    <div class="calendar-header">
+                        <div class="weekday-header">
+                            <div class="weekday">H</div>
+                            <div class="weekday">K</div>
+                            <div class="weekday">Sz</div>
+                            <div class="weekday">Cs</div>
+                            <div class="weekday">P</div>
+                            <div class="weekday">Szom</div>
+                            <div class="weekday">V</div>
+                        </div>
+                    </div>
+                    <div class="calendar-body" id="calendar-body"></div>
+                </div>
+
+                <div class="footer" id="footer">
+                    <div class="footer-title">📋 Foglalás Szerkesztő</div>
+                    
+                    <select class="booking-type-select" id="booking-type">
+                        <option value="own_tag">Saját tag</option>
+                        <option value="extra_ship">Extra hajó (3. hajó)</option>
+                    </select>
+
+                    <div class="booking-summary" id="booking-summary">
+                        <div class="booking-summary-line">
+                            <span>Hajó:</span>
+                            <span id="summary-ship">-</span>
+                        </div>
+                        <div class="booking-summary-line">
+                            <span>Dátum:</span>
+                            <span id="summary-date">-</span>
+                        </div>
+                        <div class="booking-summary-line" id="extra-line" style="display: none;">
+                            <span>Extra díj:</span>
+                            <span id="summary-extra">0 Ft</span>
+                        </div>
+                        <div class="booking-summary-line">
+                            <span>ÖSSZESEN:</span>
+                            <span id="summary-total">0 Ft</span>
+                        </div>
+                    </div>
+
+                    <textarea class="notes-field" id="notes-field" placeholder="Megjegyzések (pl: medúza allergia, nem úsznak, stb.)"></textarea>
+
+                    <div class="button-group">
+                        <button class="btn btn-confirm" id="btn-confirm" disabled>Megerősítés</button>
+                        <button class="btn btn-cancel" id="btn-cancel">Törlés</button>
                     </div>
                 </div>
-                <div class="calendar-body" id="calendar-body"></div>
             </div>
 
-            <div class="footer" id="footer">
-                <div class="footer-title">📋 Foglalás Szerkesztő</div>
-                
-                <select class="booking-type-select" id="booking-type">
-                    <option value="own_tag">Saját tag</option>
-                    <option value="extra_ship">Extra hajó (3. hajó)</option>
-                </select>
-
-                <div class="booking-summary" id="booking-summary">
-                    <div class="booking-summary-line">
-                        <span>Hajó:</span>
-                        <span id="summary-ship">-</span>
+            <!-- FOGLALÁSAIM TAB -->
+            <div class="tab-content" id="history-tab">
+                <div class="booking-history" id="booking-history">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📭</div>
+                        <div class="empty-state-text">Nincs még foglalásod.<br>Foglalj egy hajót a naptárból!</div>
                     </div>
-                    <div class="booking-summary-line">
-                        <span>Időtartam:</span>
-                        <span id="summary-dates">-</span>
-                    </div>
-                    <div class="booking-summary-line">
-                        <span>Napok:</span>
-                        <span id="summary-days">0</span>
-                    </div>
-                    <div class="booking-summary-line" id="membership-line" style="display: none;">
-                        <span>Tagsági nap:</span>
-                        <span id="summary-membership">0/6</span>
-                    </div>
-                    <div class="booking-summary-line" id="extra-line" style="display: none;">
-                        <span>Extra díj:</span>
-                        <span id="summary-extra">0 Ft</span>
-                    </div>
-                    <div class="booking-summary-line">
-                        <span>ÖSSZESEN:</span>
-                        <span id="summary-total">0 Ft</span>
-                    </div>
-                </div>
-
-                <textarea class="notes-field" id="notes-field" placeholder="Megjegyzések (pl: medúza allergia, nem úsznak, stb.)"></textarea>
-
-                <div class="button-group">
-                    <button class="btn btn-confirm" id="btn-confirm" disabled>Megerősítés</button>
-                    <button class="btn btn-cancel" id="btn-cancel">Törlés</button>
                 </div>
             </div>
         </div>
@@ -479,19 +678,22 @@
                 name: 'Balaton21',
                 type: 'Tőkesúlyos verseny',
                 capacity: 6,
-                link: 'https://balatonvitorlasai.5mp.eu/web.php?a=balatonvitorlasai&o=efK7A5_JVX'
+                link: 'https://balatonvitorlasai.5mp.eu/web.php?a=balatonvitorlasai&o=efK7A5_JVX',
+                description: 'Versenyorientált tőkesúlyos vitorlás. Gyors fordulás, magasabb önbizalom szükséges.'
             },
             rebel24: {
                 id: 'rebel24',
                 name: 'Rebel24',
                 type: 'Felső vitorlás',
-                capacity: 6
+                capacity: 6,
+                description: 'Felső vitorlás, sokoldalúan használható. Jó a kezdőknek is.'
             },
             dehler86: {
                 id: 'dehler86',
                 name: 'Dehler Duetta 86',
                 type: 'Kimenő vitorlás',
-                capacity: 6
+                capacity: 6,
+                description: 'Kimenő vitorlás, magas önbizalom szükséges. Hullámálló tengeri hajó.'
             }
         };
 
@@ -515,24 +717,17 @@
 
         const state = {
             selectedShip: null,
-            startDate: null,
-            endDate: null,
+            selectedDate: null,
             bookingType: 'own_tag',
             notes: '',
-            bookings: {}
+            bookings: {},
+            filteredShips: ['balaton21', 'rebel24', 'dehler86']
         };
 
-        const MEMBERSHIP_DAYS = 6;
-        const EXTRA_SHIP_PRICE_LOW = 2500;
-        const EXTRA_SHIP_PRICE_HIGH = 5000;
-        const EXTRA_SHIP_MAX_DAYS = 2;
-
-        function getAvailableDays(shipId, month) {
-            return bookingData[shipId][month] || [];
-        }
+        const EXTRA_SHIP_PRICE = 2500;
 
         function isFree(shipId, day, month) {
-            return getAvailableDays(shipId, month).includes(day);
+            return bookingData[shipId][month].includes(day);
         }
 
         function getFirstDay(month, year) {
@@ -543,84 +738,57 @@
             return month === 6 ? 30 : 31;
         }
 
-        function getDaysBetween(start, end) {
-            return Math.floor((end - start) / (1000 * 60 * 60 * 24)) + 1;
-        }
-
-        function getMonthName(month) {
-            const names = ['Június', 'Július', 'Augusztus'];
-            return names[month - 6];
-        }
-
-        function calculateCost(startDate, endDate, bookingType) {
-            const dayCount = getDaysBetween(startDate, endDate);
-
+        function calculateCost(bookingType) {
             if (bookingType === 'own_tag') {
-                const freeDays = Math.min(dayCount, MEMBERSHIP_DAYS);
-                const extraDays = dayCount - freeDays;
-                const extraCost = extraDays > 0 ? extraDays * 100 : 0;
-
-                return {
-                    dayCount,
-                    freeDays,
-                    extraDays,
-                    totalCost: extraCost,
-                    membershipRemaining: MEMBERSHIP_DAYS - freeDays
-                };
-            } else if (bookingType === 'extra_ship') {
-                if (dayCount > EXTRA_SHIP_MAX_DAYS) {
-                    return { error: 'Max 2 nap egymás után!' };
-                }
-
-                const basePrice = dayCount <= MEMBERSHIP_DAYS ? EXTRA_SHIP_PRICE_LOW : EXTRA_SHIP_PRICE_HIGH;
-                const totalCost = dayCount * basePrice;
-
-                return {
-                    dayCount,
-                    totalCost,
-                    pricePerDay: basePrice
-                };
+                return 0; // Saját tag: ingyenes
+            } else {
+                return EXTRA_SHIP_PRICE; // Extra hajó: 2500 Ft
             }
         }
 
+        function updateShipInfo() {
+            const panel = document.getElementById('selected-ship-card');
+            if (!state.selectedShip) {
+                panel.style.display = 'none';
+                return;
+            }
+
+            const ship = ships[state.selectedShip];
+            panel.style.display = 'block';
+            panel.innerHTML = `
+                <div class="ship-card-title">🚤 ${ship.name}</div>
+                <div class="ship-card-type">${ship.type}</div>
+                <div class="ship-card-capacity">👥 Max: ${ship.capacity} fő</div>
+                <div class="ship-details">
+                    <div style="margin-bottom: 4px;">📖 ${ship.description}</div>
+                    ${ship.link ? `<a href="${ship.link}" target="_blank" class="ship-link">🔗 Bővebben</a>` : ''}
+                </div>
+            `;
+        }
+
         function updateBookingSummary() {
-            const summary = document.getElementById('booking-summary');
             const shipName = state.selectedShip ? ships[state.selectedShip].name : '-';
             document.getElementById('summary-ship').textContent = shipName;
 
-            if (state.startDate && state.endDate) {
-                const startStr = state.startDate.toLocaleDateString('hu-HU');
-                const endStr = state.endDate.toLocaleDateString('hu-HU');
-                document.getElementById('summary-dates').textContent = `${startStr} - ${endStr}`;
+            if (state.selectedDate) {
+                const dateStr = state.selectedDate.toLocaleDateString('hu-HU');
+                document.getElementById('summary-date').textContent = dateStr;
 
-                const cost = calculateCost(state.startDate, state.endDate, state.bookingType);
-                if (!cost.error) {
-                    document.getElementById('summary-days').textContent = cost.dayCount;
+                const cost = calculateCost(state.bookingType);
 
-                    if (state.bookingType === 'own_tag') {
-                        document.getElementById('membership-line').style.display = 'flex';
-                        document.getElementById('extra-line').style.display = 'flex';
-                        document.getElementById('summary-membership').textContent = `${cost.freeDays}/${MEMBERSHIP_DAYS}`;
-                        document.getElementById('summary-extra').textContent = cost.extraDays > 0 ? `${cost.extraDays} × 100 Ft = ${cost.extraCost} Ft` : '0 Ft';
-                    } else {
-                        document.getElementById('membership-line').style.display = 'none';
-                        document.getElementById('extra-line').style.display = 'flex';
-                        document.getElementById('summary-extra').textContent = `${cost.dayCount} × ${cost.pricePerDay} Ft = ${cost.totalCost} Ft`;
-                    }
-
-                    const totalText = cost.totalCost > 0 ? `${cost.totalCost} Ft` : 'Ingyenes';
-                    document.getElementById('summary-total').textContent = totalText;
-                    document.getElementById('btn-confirm').disabled = false;
+                if (state.bookingType === 'own_tag') {
+                    document.getElementById('extra-line').style.display = 'none';
+                    document.getElementById('summary-total').textContent = 'Ingyenes (tagsági)';
                 } else {
-                    document.getElementById('summary-total').textContent = cost.error;
-                    document.getElementById('btn-confirm').disabled = true;
+                    document.getElementById('extra-line').style.display = 'flex';
+                    document.getElementById('summary-extra').textContent = `${cost} Ft`;
+                    document.getElementById('summary-total').textContent = `${cost} Ft`;
                 }
+
+                document.getElementById('btn-confirm').disabled = false;
             } else {
-                document.getElementById('summary-dates').textContent = '-';
-                document.getElementById('summary-days').textContent = '0';
+                document.getElementById('summary-date').textContent = '-';
                 document.getElementById('summary-total').textContent = '0 Ft';
-                document.getElementById('membership-line').style.display = 'none';
-                document.getElementById('extra-line').style.display = 'none';
                 document.getElementById('btn-confirm').disabled = true;
             }
         }
@@ -630,9 +798,11 @@
 
             for (const key in state.bookings) {
                 const booking = state.bookings[key];
-                if (booking.ship === 'balaton21') balCount++;
-                else if (booking.ship === 'rebel24') rebCount++;
-                else if (booking.ship === 'dehler86') dehCount++;
+                if (booking.status !== 'cancelled') {
+                    if (booking.ship === 'balaton21') balCount++;
+                    else if (booking.ship === 'rebel24') rebCount++;
+                    else if (booking.ship === 'dehler86') dehCount++;
+                }
             }
 
             document.getElementById('stat-balaton').textContent = balCount;
@@ -640,31 +810,56 @@
             document.getElementById('stat-dehler').textContent = dehCount;
         }
 
-        function dayKey(year, month, day) {
-            return `${year}-${month}-${day}`;
-        }
+        function updateBookingHistory() {
+            const history = document.getElementById('booking-history');
+            const bookings = Object.entries(state.bookings)
+                .filter(([_, b]) => b.status !== 'cancelled')
+                .reverse();
 
-        function selectDateRange(startDate) {
-            if (!state.selectedShip) {
-                alert('Válassz egy hajót először!');
+            if (bookings.length === 0) {
+                history.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📭</div>
+                        <div class="empty-state-text">Nincs még foglalásod.<br>Foglalj egy hajót a naptárból!</div>
+                    </div>
+                `;
                 return;
             }
 
-            if (!state.startDate || (state.startDate && state.endDate)) {
-                state.startDate = startDate;
-                state.endDate = null;
-            } else if (startDate < state.startDate) {
-                state.startDate = startDate;
-            } else {
-                state.endDate = startDate;
-            }
+            history.innerHTML = bookings.map(([id, booking]) => {
+                const dateStr = booking.selectedDate.toLocaleDateString('hu-HU');
+                const shipName = ships[booking.ship].name;
+                const statusText = '✅ Aktív';
 
-            renderCalendar();
-            updateBookingSummary();
-            document.getElementById('footer').classList.add('active');
+                return `
+                    <div class="booking-card">
+                        <div class="booking-card-header">
+                            <div class="booking-card-ship">🚤 ${shipName}</div>
+                            <div class="booking-card-status active">${statusText}</div>
+                        </div>
+                        <div class="booking-card-dates">📅 ${dateStr}</div>
+                        <div class="booking-card-details">
+                            <div>Típus: ${booking.bookingType === 'own_tag' ? 'Saját tag (ingyenes)' : 'Extra hajó (2500 Ft)'}</div>
+                            ${booking.notes ? `<div>📝 ${booking.notes}</div>` : ''}
+                        </div>
+                        <div class="booking-card-actions">
+                            <button class="booking-btn danger" onclick="cancelBooking('${id}')">Lemondás</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
         }
 
-        function selectShip(day, month, monthNum) {
+        function cancelBooking(id) {
+            if (confirm('Biztosan lemondod ezt a foglalást?')) {
+                state.bookings[id].status = 'cancelled';
+                updateBookingHistory();
+                updateStats();
+                renderCalendar();
+            }
+        }
+
+        function selectDay(day, month, monthNum) {
             if (!isFree(state.selectedShip || 'balaton21', day, month)) {
                 return;
             }
@@ -673,7 +868,7 @@
             const dropdown = document.getElementById('dropdown');
             dropdown.innerHTML = '';
 
-            const shipList = ['balaton21', 'rebel24', 'dehler86'];
+            const shipList = state.filteredShips;
             shipList.forEach(shipId => {
                 if (isFree(shipId, day, month)) {
                     const item = document.createElement('div');
@@ -681,9 +876,12 @@
                     item.textContent = ships[shipId].name;
                     item.addEventListener('click', () => {
                         state.selectedShip = shipId;
-                        const dateObj = new Date(2026, monthNum - 1, day);
-                        selectDateRange(dateObj);
+                        state.selectedDate = new Date(2026, monthNum - 1, day);
+                        updateShipInfo();
+                        updateBookingSummary();
+                        document.getElementById('footer').classList.add('active');
                         dropdown.classList.remove('active');
+                        renderCalendar();
                     });
                     dropdown.appendChild(item);
                 }
@@ -736,23 +934,14 @@
                         dayEl.classList.add('day-free');
                         dayEl.addEventListener('click', (e) => {
                             e.stopPropagation();
-                            selectShip(day, m.key, m.num);
+                            selectDay(day, m.key, m.num);
                         });
                     } else {
                         dayEl.classList.add('day-occupied');
                     }
 
-                    if (state.startDate && dateObj.getTime() === state.startDate.getTime()) {
-                        dayEl.classList.add('day-start');
-                    }
-
-                    if (state.startDate && state.endDate) {
-                        if (dateObj > state.startDate && dateObj < state.endDate) {
-                            dayEl.classList.add('day-range');
-                        }
-                        if (dateObj.getTime() === state.endDate.getTime()) {
-                            dayEl.classList.add('day-end');
-                        }
+                    if (state.selectedDate && dateObj.getTime() === state.selectedDate.getTime()) {
+                        dayEl.classList.add('day-selected');
                     }
 
                     grid.appendChild(dayEl);
@@ -762,6 +951,30 @@
                 body.appendChild(monthEl);
             });
         }
+
+        // Tab switching
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById(btn.dataset.tab + '-tab').classList.add('active');
+
+                if (btn.dataset.tab === 'history') {
+                    updateBookingHistory();
+                }
+            });
+        });
+
+        document.getElementById('capacity-filter').addEventListener('change', (e) => {
+            const capacity = parseInt(e.target.value);
+            if (capacity) {
+                state.filteredShips = Object.keys(ships).filter(shipId => ships[shipId].capacity >= capacity);
+            } else {
+                state.filteredShips = ['balaton21', 'rebel24', 'dehler86'];
+            }
+            renderCalendar();
+        });
 
         document.getElementById('booking-type').addEventListener('change', (e) => {
             state.bookingType = e.target.value;
@@ -773,32 +986,25 @@
         });
 
         document.getElementById('btn-confirm').addEventListener('click', () => {
-            if (!state.startDate || !state.endDate || !state.selectedShip) {
-                alert('Válassz dátumokat és hajót!');
-                return;
-            }
-
-            const cost = calculateCost(state.startDate, state.endDate, state.bookingType);
-            if (cost.error) {
-                alert(cost.error);
+            if (!state.selectedDate || !state.selectedShip) {
+                alert('Válassz egy napot és hajót!');
                 return;
             }
 
             const bookingId = `BK-${Date.now()}`;
             state.bookings[bookingId] = {
                 ship: state.selectedShip,
-                startDate: state.startDate,
-                endDate: state.endDate,
+                selectedDate: state.selectedDate,
                 bookingType: state.bookingType,
                 notes: state.notes,
-                cost: cost.totalCost,
-                createdAt: new Date()
+                cost: calculateCost(state.bookingType),
+                createdAt: new Date(),
+                status: 'active'
             };
 
-            alert(`✅ Foglalás sikeres!\nID: ${bookingId}\nDíj: ${cost.totalCost} Ft`);
+            alert(`✅ Foglalás sikeres!\nID: ${bookingId}\nDátum: ${state.selectedDate.toLocaleDateString('hu-HU')}\nDíj: ${state.bookings[bookingId].cost === 0 ? 'Ingyenes (tagsági)' : state.bookings[bookingId].cost + ' Ft'}`);
 
-            state.startDate = null;
-            state.endDate = null;
+            state.selectedDate = null;
             state.notes = '';
             document.getElementById('notes-field').value = '';
             document.getElementById('footer').classList.remove('active');
@@ -811,8 +1017,7 @@
         });
 
         document.getElementById('btn-cancel').addEventListener('click', () => {
-            state.startDate = null;
-            state.endDate = null;
+            state.selectedDate = null;
             state.notes = '';
             document.getElementById('notes-field').value = '';
             document.getElementById('footer').classList.remove('active');
@@ -827,9 +1032,11 @@
             }
         });
 
+        // Inicializáció
         state.selectedShip = 'balaton21';
         renderCalendar();
         updateStats();
+        updateShipInfo();
     </script>
 </body>
 </html>
