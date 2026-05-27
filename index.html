@@ -92,9 +92,9 @@
             padding: 8px;
             border-bottom: 1px solid #e0e0e0;
             flex-shrink: 0;
-            position: sticky;
-            top: 0;
+            position: relative;
             z-index: 10;
+            will-change: transform;
         }
 
         .weekday-header {
@@ -239,9 +239,12 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             display: none;
             flex-shrink: 0;
-            position: sticky;
-            bottom: 0;
+            position: fixed;
+            bottom: 8px;
+            left: 8px;
+            right: 8px;
             z-index: 20;
+            will-change: transform;
         }
 
         .footer.active {
@@ -348,7 +351,7 @@
 
         <div class="main-content">
             <div class="calendar-section">
-                <div class="calendar-header">
+                <div class="calendar-header" id="sticky-header">
                     <div class="weekday-header">
                         <div class="weekday">H</div>
                         <div class="weekday">K</div>
@@ -411,6 +414,41 @@
         };
 
         const dayShips = {};
+        const stickyHeader = document.getElementById('sticky-header');
+        const calendarBody = document.getElementById('calendar-body');
+        const footer = document.getElementById('footer');
+
+        function updateStickyHeader() {
+            if (!calendarBody) return;
+            const scrollTop = calendarBody.scrollTop;
+            stickyHeader.style.transform = `translateY(${scrollTop}px)`;
+        }
+
+        function updateStickyFooter() {
+            if (!calendarBody || !footer) return;
+            const scrollHeight = calendarBody.scrollHeight;
+            const clientHeight = calendarBody.clientHeight;
+            const scrollTop = calendarBody.scrollTop;
+            const scrollableDistance = scrollHeight - clientHeight;
+            const distanceFromBottom = scrollableDistance - scrollTop;
+            
+            if (distanceFromBottom < 120) {
+                footer.style.position = 'relative';
+                footer.style.bottom = 'auto';
+                footer.style.left = 'auto';
+                footer.style.right = 'auto';
+            } else {
+                footer.style.position = 'fixed';
+                footer.style.bottom = '8px';
+                footer.style.left = '8px';
+                footer.style.right = '8px';
+            }
+        }
+
+        calendarBody.addEventListener('scroll', () => {
+            updateStickyHeader();
+            updateStickyFooter();
+        });
 
         function getAvailableShips(day, month) {
             const available = [];
@@ -446,7 +484,6 @@
             document.getElementById('count-balaton').textContent = b;
             document.getElementById('count-abbe').textContent = a;
 
-            const footer = document.getElementById('footer');
             if (total > 0) {
                 footer.classList.add('active');
             } else {
@@ -520,13 +557,11 @@
             const dropdownHeight = dropdown.offsetHeight || 120;
 
             if (weekdayIndex <= 2) {
-                dropdown.classList.add('right');
-                dropdown.classList.remove('left');
                 dropdown.style.left = (rect.right + 8) + 'px';
+                dropdown.style.right = 'auto';
             } else {
-                dropdown.classList.add('left');
-                dropdown.classList.remove('right');
                 dropdown.style.right = (window.innerWidth - rect.left + 8) + 'px';
+                dropdown.style.left = 'auto';
             }
 
             dropdown.style.top = (rect.top + rect.height / 2 - dropdownHeight / 2) + 'px';
