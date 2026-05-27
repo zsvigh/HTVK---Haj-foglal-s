@@ -613,7 +613,7 @@
                     <div class="filter-label">Válaszd ki a max utaslétszámot a szűréshez</div>
                     <select class="filter-select" id="capacity-filter">
                         <option value="">Összes hajó</option>
-                        <option value="6">6+ fő</option>
+                        <option value="6">6 fő</option>
                         <option value="12">12 fő</option>
                     </select>
                 </div>
@@ -647,7 +647,7 @@
                     <div class="footer-title">📋 Foglalás Szerkesztő</div>
                     
                     <select class="booking-type-select" id="booking-type">
-                        <option value="own_tag">Saját tag</option>
+                        <option value="own_tag">Tagság után járó nap</option>
                         <option value="extra_ship">Extra hajó (3. hajó)</option>
                     </select>
 
@@ -975,7 +975,7 @@
                     </div>
                     <div class="booking-card-dates">📅 ${booking.selectedDate.toLocaleDateString('hu-HU')}</div>
                     <div class="booking-card-details">
-                        <div>Típus: ${booking.bookingType === 'own_tag' ? 'Saját tag (ingyenes)' : 'Extra hajó (2500 Ft)'}</div>
+                        <div>Típus: ${booking.bookingType === 'own_tag' ? 'Tagság után járó nap (ingyenes)' : 'Extra hajó (2500 Ft)'}</div>
                         ${booking.notes ? `<div>📝 ${booking.notes}</div>` : ''}
                     </div>
                     <div class="booking-card-actions">
@@ -1007,8 +1007,15 @@
         });
 
         document.getElementById('capacity-filter').addEventListener('change', (e) => {
-            const capacity = parseInt(e.target.value);
-            state.filteredShips = capacity ? Object.keys(ships).filter(shipId => ships[shipId].capacity >= capacity) : ['balaton21', 'rebel24', 'dehler86'];
+            const capacity = e.target.value;
+            if (capacity === '6') {
+                state.filteredShips = ['balaton21', 'rebel24'];
+            } else if (capacity === '12') {
+                state.filteredShips = ['dehler86'];
+            } else {
+                state.filteredShips = ['balaton21', 'rebel24', 'dehler86'];
+            }
+            state.selectedShip = null;
             renderShipCarousel();
             renderCalendar();
         });
