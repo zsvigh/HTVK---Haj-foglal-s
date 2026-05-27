@@ -37,6 +37,7 @@
             border-radius: 8px;
             text-align: center;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            flex-shrink: 0;
         }
 
         .header-title {
@@ -65,6 +66,14 @@
             border-radius: 4px;
         }
 
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-height: 0;
+            gap: 8px;
+        }
+
         .calendar-section {
             flex: 1;
             background: white;
@@ -74,12 +83,14 @@
             flex-direction: column;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             position: relative;
+            min-height: 0;
         }
 
         .calendar-header {
             background: #f5f5f5;
             padding: 8px;
             border-bottom: 1px solid #e0e0e0;
+            flex-shrink: 0;
         }
 
         .month-title {
@@ -113,6 +124,7 @@
             flex-direction: column;
             gap: 8px;
             position: relative;
+            min-height: 0;
         }
 
         .month {
@@ -137,6 +149,7 @@
             border: 1px solid transparent;
             position: relative;
             transition: all 0.15s ease;
+            min-height: 40px;
         }
 
         .day-free {
@@ -176,16 +189,6 @@
 
         .dropdown-menu.active {
             display: block;
-        }
-
-        .dropdown-menu.left {
-            right: auto;
-            left: auto;
-        }
-
-        .dropdown-menu.right {
-            left: auto;
-            right: auto;
         }
 
         .dropdown-item {
@@ -230,6 +233,7 @@
             font-size: 11px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             display: none;
+            flex-shrink: 0;
         }
 
         .footer.active {
@@ -245,6 +249,7 @@
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
             gap: 8px;
+            margin-bottom: 8px;
         }
 
         .footer-item {
@@ -274,7 +279,6 @@
             font-size: 12px;
             font-weight: 600;
             cursor: pointer;
-            margin-top: 8px;
             transition: all 0.2s ease;
         }
 
@@ -308,6 +312,7 @@
 
             .day {
                 font-size: 10px;
+                min-height: 35px;
             }
 
             .header {
@@ -333,40 +338,42 @@
             </div>
         </div>
 
-        <div class="calendar-section">
-            <div class="calendar-header">
-                <div class="weekday-header">
-                    <div class="weekday">H</div>
-                    <div class="weekday">K</div>
-                    <div class="weekday">Sz</div>
-                    <div class="weekday">Cs</div>
-                    <div class="weekday">P</div>
-                    <div class="weekday">Szom</div>
-                    <div class="weekday">V</div>
+        <div class="main-content">
+            <div class="calendar-section">
+                <div class="calendar-header">
+                    <div class="weekday-header">
+                        <div class="weekday">H</div>
+                        <div class="weekday">K</div>
+                        <div class="weekday">Sz</div>
+                        <div class="weekday">Cs</div>
+                        <div class="weekday">P</div>
+                        <div class="weekday">Szom</div>
+                        <div class="weekday">V</div>
+                    </div>
+                </div>
+                <div class="calendar-body" id="calendar-body">
+                    <!-- Dinamikusan generálva -->
                 </div>
             </div>
-            <div class="calendar-body" id="calendar-body">
-                <!-- Dinamikusan generálva -->
-            </div>
-        </div>
 
-        <div class="footer" id="footer">
-            <div class="footer-title">📌 Kiválasztott napok</div>
-            <div class="footer-items">
-                <div class="footer-item">
-                    <div class="footer-item-label">Rebell</div>
-                    <div class="footer-item-value" id="count-rebell">0</div>
+            <div class="footer" id="footer">
+                <div class="footer-title">📌 Kiválasztott napok</div>
+                <div class="footer-items">
+                    <div class="footer-item">
+                        <div class="footer-item-label">Rebell</div>
+                        <div class="footer-item-value" id="count-rebell">0</div>
+                    </div>
+                    <div class="footer-item">
+                        <div class="footer-item-label">Balaton21</div>
+                        <div class="footer-item-value" id="count-balaton">0</div>
+                    </div>
+                    <div class="footer-item">
+                        <div class="footer-item-label">Abbé</div>
+                        <div class="footer-item-value" id="count-abbe">0</div>
+                    </div>
                 </div>
-                <div class="footer-item">
-                    <div class="footer-item-label">Balaton21</div>
-                    <div class="footer-item-value" id="count-balaton">0</div>
-                </div>
-                <div class="footer-item">
-                    <div class="footer-item-label">Abbé</div>
-                    <div class="footer-item-value" id="count-abbe">0</div>
-                </div>
+                <button class="reset-btn" id="reset-btn">Törlés</button>
             </div>
-            <button class="reset-btn" id="reset-btn">Törlés</button>
         </div>
     </div>
 
@@ -490,7 +497,6 @@
                 if (!isAvailable) {
                     item.classList.add('unavailable');
                 } else {
-                    // Ha már van kiválasztott hajó erre a napra és ez az, jelölj meg
                     if (selectedShip === ship.name) {
                         item.classList.add('selected');
                     }
@@ -508,12 +514,10 @@
             const dropdownHeight = dropdown.offsetHeight || 120;
 
             if (weekdayIndex <= 2) {
-                // Jobbra
                 dropdown.classList.add('right');
                 dropdown.classList.remove('left');
                 dropdown.style.left = (rect.right + 8) + 'px';
             } else {
-                // Balra
                 dropdown.classList.add('left');
                 dropdown.classList.remove('right');
                 dropdown.style.right = (window.innerWidth - rect.left + 8) + 'px';
