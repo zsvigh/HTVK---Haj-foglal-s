@@ -72,7 +72,6 @@
             flex: 1;
             min-height: 0;
             gap: 8px;
-            position: relative;
         }
 
         .calendar-section {
@@ -92,9 +91,12 @@
             padding: 8px;
             border-bottom: 1px solid #e0e0e0;
             flex-shrink: 0;
-            position: relative;
+            position: fixed;
+            top: 88px;
+            left: 8px;
+            right: 8px;
             z-index: 10;
-            will-change: transform;
+            border-radius: 8px 8px 0 0;
         }
 
         .weekday-header {
@@ -118,6 +120,7 @@
             overflow-y: scroll;
             -webkit-overflow-scrolling: touch;
             padding: 8px;
+            padding-top: 50px;
             display: flex;
             flex-direction: column;
             gap: 8px;
@@ -237,18 +240,7 @@
             border-radius: 8px;
             font-size: 11px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            display: none;
             flex-shrink: 0;
-            position: fixed;
-            bottom: 8px;
-            left: 8px;
-            right: 8px;
-            z-index: 20;
-            will-change: transform;
-        }
-
-        .footer.active {
-            display: block;
         }
 
         .footer-title {
@@ -297,11 +289,6 @@
             transform: scale(0.98);
         }
 
-        .reset-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
         ::-webkit-scrollbar {
             width: 4px;
         }
@@ -332,6 +319,7 @@
 
             .calendar-body {
                 padding: 4px;
+                padding-top: 50px;
                 gap: 4px;
             }
         }
@@ -414,41 +402,7 @@
         };
 
         const dayShips = {};
-        const stickyHeader = document.getElementById('sticky-header');
-        const calendarBody = document.getElementById('calendar-body');
         const footer = document.getElementById('footer');
-
-        function updateStickyHeader() {
-            if (!calendarBody) return;
-            const scrollTop = calendarBody.scrollTop;
-            stickyHeader.style.transform = `translateY(${scrollTop}px)`;
-        }
-
-        function updateStickyFooter() {
-            if (!calendarBody || !footer) return;
-            const scrollHeight = calendarBody.scrollHeight;
-            const clientHeight = calendarBody.clientHeight;
-            const scrollTop = calendarBody.scrollTop;
-            const scrollableDistance = scrollHeight - clientHeight;
-            const distanceFromBottom = scrollableDistance - scrollTop;
-            
-            if (distanceFromBottom < 120) {
-                footer.style.position = 'relative';
-                footer.style.bottom = 'auto';
-                footer.style.left = 'auto';
-                footer.style.right = 'auto';
-            } else {
-                footer.style.position = 'fixed';
-                footer.style.bottom = '8px';
-                footer.style.left = '8px';
-                footer.style.right = '8px';
-            }
-        }
-
-        calendarBody.addEventListener('scroll', () => {
-            updateStickyHeader();
-            updateStickyFooter();
-        });
 
         function getAvailableShips(day, month) {
             const available = [];
@@ -474,7 +428,6 @@
             const r = selections.rebell.size;
             const b = selections.balaton.size;
             const a = selections.abbe.size;
-            const total = r + b + a;
 
             document.getElementById('stat-rebell').textContent = r;
             document.getElementById('stat-balaton').textContent = b;
@@ -483,12 +436,6 @@
             document.getElementById('count-rebell').textContent = r;
             document.getElementById('count-balaton').textContent = b;
             document.getElementById('count-abbe').textContent = a;
-
-            if (total > 0) {
-                footer.classList.add('active');
-            } else {
-                footer.classList.remove('active');
-            }
         }
 
         function selectShip(ship, dateKey, dayEl) {
