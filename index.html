@@ -72,6 +72,7 @@
             flex: 1;
             min-height: 0;
             gap: 8px;
+            position: relative;
         }
 
         .calendar-section {
@@ -91,13 +92,9 @@
             padding: 8px;
             border-bottom: 1px solid #e0e0e0;
             flex-shrink: 0;
-        }
-
-        .month-title {
-            font-size: 13px;
-            font-weight: 700;
-            color: #667eea;
-            margin-bottom: 6px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
 
         .weekday-header {
@@ -118,7 +115,8 @@
 
         .calendar-body {
             flex: 1;
-            overflow-y: auto;
+            overflow-y: scroll;
+            -webkit-overflow-scrolling: touch;
             padding: 8px;
             display: flex;
             flex-direction: column;
@@ -129,6 +127,13 @@
 
         .month {
             flex-shrink: 0;
+        }
+
+        .month-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 6px;
         }
 
         .days-grid {
@@ -234,6 +239,9 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             display: none;
             flex-shrink: 0;
+            position: sticky;
+            bottom: 0;
+            z-index: 20;
         }
 
         .footer.active {
@@ -351,9 +359,7 @@
                         <div class="weekday">V</div>
                     </div>
                 </div>
-                <div class="calendar-body" id="calendar-body">
-                    <!-- Dinamikusan generálva -->
-                </div>
+                <div class="calendar-body" id="calendar-body"></div>
             </div>
 
             <div class="footer" id="footer">
