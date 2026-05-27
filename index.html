@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Hajók Naptár</title>
+    <title>Hajók Naptár - MVP</title>
     <style>
         * {
             margin: 0;
@@ -96,6 +96,7 @@
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             gap: 2px;
+            margin-bottom: 4px;
         }
 
         .weekday {
@@ -174,6 +175,23 @@
             box-shadow: 0 0 6px rgba(255,152,0,0.4);
         }
 
+        .day-start {
+            background: #2196F3 !important;
+            color: white;
+            border-left: 3px solid #1976D2;
+        }
+
+        .day-range {
+            background: #BBDEFB !important;
+            color: #1565C0;
+        }
+
+        .day-end {
+            background: #2196F3 !important;
+            color: white;
+            border-right: 3px solid #1976D2;
+        }
+
         .dropdown-menu {
             position: fixed;
             background: white;
@@ -181,7 +199,7 @@
             border-radius: 6px;
             box-shadow: 0 4px 16px rgba(0,0,0,0.2);
             z-index: 10000;
-            width: 150px;
+            width: 160px;
             display: none;
             padding: 6px 0;
         }
@@ -198,7 +216,6 @@
             border-bottom: 1px solid #f0f0f0;
             cursor: pointer;
             transition: all 0.1s ease;
-            position: relative;
         }
 
         .dropdown-item:last-child {
@@ -215,15 +232,6 @@
             background: #fafafa;
         }
 
-        .dropdown-item.selected::after {
-            content: '✓';
-            position: absolute;
-            right: 10px;
-            font-weight: 700;
-            color: #4CAF50;
-            font-size: 14px;
-        }
-
         .footer {
             background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
             color: white;
@@ -232,43 +240,88 @@
             font-size: 11px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             flex-shrink: 0;
+            display: none;
+            flex-direction: column;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .footer.active {
+            display: flex;
         }
 
         .footer-title {
             font-weight: 700;
-            margin-bottom: 6px;
-        }
-
-        .footer-items {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 8px;
             margin-bottom: 8px;
         }
 
-        .footer-item {
+        .booking-type-select {
             background: rgba(255,255,255,0.15);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
             padding: 6px;
             border-radius: 4px;
-            text-align: center;
-        }
-
-        .footer-item-label {
-            font-size: 9px;
-            opacity: 0.9;
-        }
-
-        .footer-item-value {
-            font-size: 13px;
-            font-weight: 700;
-        }
-
-        .reset-btn {
+            font-size: 11px;
+            margin-bottom: 8px;
             width: 100%;
-            background: #FF6B6B;
+            cursor: pointer;
+        }
+
+        .booking-type-select option {
+            background: #4CAF50;
             color: white;
-            border: none;
+        }
+
+        .booking-summary {
+            background: rgba(255,255,255,0.15);
+            padding: 8px;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            font-size: 10px;
+            line-height: 1.5;
+        }
+
+        .booking-summary-line {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+        }
+
+        .booking-summary-line:last-child {
+            margin-bottom: 0;
+            font-weight: 700;
+            font-size: 12px;
+            padding-top: 4px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .notes-field {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 4px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            font-size: 10px;
+            margin-bottom: 8px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 40px;
+        }
+
+        .notes-field::placeholder {
+            color: rgba(255,255,255,0.6);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn {
+            flex: 1;
             padding: 10px;
+            border: none;
             border-radius: 6px;
             font-size: 12px;
             font-weight: 600;
@@ -276,8 +329,37 @@
             transition: all 0.2s ease;
         }
 
-        .reset-btn:active {
+        .btn-confirm {
+            background: #FF6B6B;
+            color: white;
+        }
+
+        .btn-confirm:active {
             transform: scale(0.98);
+        }
+
+        .btn-cancel {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+
+        .btn-cancel:active {
+            transform: scale(0.98);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .price-tag {
+            display: inline-block;
+            background: #FF6B6B;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 9px;
+            font-weight: 700;
         }
 
         ::-webkit-scrollbar {
@@ -291,66 +373,6 @@
         ::-webkit-scrollbar-thumb {
             background: #ccc;
             border-radius: 2px;
-        }
-
-        @media (max-width: 320px) {
-            html, body {
-                overflow: auto;
-            }
-
-            .container {
-                display: block;
-                height: auto;
-                padding: 4px;
-                gap: 0;
-            }
-
-            .header {
-                margin-bottom: 4px;
-                padding: 8px;
-            }
-
-            .main-content {
-                gap: 0;
-            }
-
-            .calendar-section {
-                margin-bottom: 4px;
-                border-radius: 4px;
-            }
-
-            .calendar-header {
-                padding: 4px;
-            }
-
-            .calendar-body {
-                max-height: none;
-                padding: 4px;
-                overflow-y: visible;
-            }
-
-            .day {
-                font-size: 10px;
-                min-height: 30px;
-            }
-
-            .footer {
-                margin-top: 4px;
-                padding: 8px;
-                border-radius: 4px;
-            }
-
-            .weekday {
-                font-size: 8px;
-            }
-
-            .month-title {
-                font-size: 12px;
-            }
-
-            .header-title {
-                font-size: 14px;
-            }
         }
 
         @media (max-height: 600px) {
@@ -378,12 +400,12 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="header-title">⛵ Hajók Naptár</div>
+            <div class="header-title">⛵ Hajók Naptár - MVP</div>
             <div class="header-subtitle">Június – augusztus 2026</div>
             <div class="header-stats">
-                <div class="stat-item">R: <span id="stat-rebell">0</span></div>
-                <div class="stat-item">B21: <span id="stat-balaton">0</span></div>
-                <div class="stat-item">A: <span id="stat-abbe">0</span></div>
+                <div class="stat-item">Bal21: <span id="stat-balaton">0</span></div>
+                <div class="stat-item">Rebel24: <span id="stat-rebel">0</span></div>
+                <div class="stat-item">Dehler86: <span id="stat-dehler">0</span></div>
             </div>
         </div>
 
@@ -403,23 +425,47 @@
                 <div class="calendar-body" id="calendar-body"></div>
             </div>
 
-            <div class="footer">
-                <div class="footer-title">📌 Kiválasztott napok</div>
-                <div class="footer-items">
-                    <div class="footer-item">
-                        <div class="footer-item-label">Rebell</div>
-                        <div class="footer-item-value" id="count-rebell">0</div>
+            <div class="footer" id="footer">
+                <div class="footer-title">📋 Foglalás Szerkesztő</div>
+                
+                <select class="booking-type-select" id="booking-type">
+                    <option value="own_tag">Saját tag</option>
+                    <option value="extra_ship">Extra hajó (3. hajó)</option>
+                </select>
+
+                <div class="booking-summary" id="booking-summary">
+                    <div class="booking-summary-line">
+                        <span>Hajó:</span>
+                        <span id="summary-ship">-</span>
                     </div>
-                    <div class="footer-item">
-                        <div class="footer-item-label">Balaton21</div>
-                        <div class="footer-item-value" id="count-balaton">0</div>
+                    <div class="booking-summary-line">
+                        <span>Időtartam:</span>
+                        <span id="summary-dates">-</span>
                     </div>
-                    <div class="footer-item">
-                        <div class="footer-item-label">Abbé</div>
-                        <div class="footer-item-value" id="count-abbe">0</div>
+                    <div class="booking-summary-line">
+                        <span>Napok:</span>
+                        <span id="summary-days">0</span>
+                    </div>
+                    <div class="booking-summary-line" id="membership-line" style="display: none;">
+                        <span>Tagsági nap:</span>
+                        <span id="summary-membership">0/6</span>
+                    </div>
+                    <div class="booking-summary-line" id="extra-line" style="display: none;">
+                        <span>Extra díj:</span>
+                        <span id="summary-extra">0 Ft</span>
+                    </div>
+                    <div class="booking-summary-line">
+                        <span>ÖSSZESEN:</span>
+                        <span id="summary-total">0 Ft</span>
                     </div>
                 </div>
-                <button class="reset-btn" id="reset-btn">Törlés</button>
+
+                <textarea class="notes-field" id="notes-field" placeholder="Megjegyzések (pl: medúza allergia, nem úsznak, stb.)"></textarea>
+
+                <div class="button-group">
+                    <button class="btn btn-confirm" id="btn-confirm" disabled>Megerősítés</button>
+                    <button class="btn btn-cancel" id="btn-cancel">Törlés</button>
+                </div>
             </div>
         </div>
     </div>
@@ -427,149 +473,236 @@
     <div class="dropdown-menu" id="dropdown"></div>
 
     <script>
-        const data = {
-            rebell: {
+        const ships = {
+            balaton21: {
+                id: 'balaton21',
+                name: 'Balaton21',
+                type: 'Tőkesúlyos verseny',
+                capacity: 6,
+                link: 'https://balatonvitorlasai.5mp.eu/web.php?a=balatonvitorlasai&o=efK7A5_JVX'
+            },
+            rebel24: {
+                id: 'rebel24',
+                name: 'Rebel24',
+                type: 'Felső vitorlás',
+                capacity: 6
+            },
+            dehler86: {
+                id: 'dehler86',
+                name: 'Dehler Duetta 86',
+                type: 'Kimenő vitorlás',
+                capacity: 6
+            }
+        };
+
+        const bookingData = {
+            balaton21: {
                 june: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16, 17, 18, 19, 20, 22, 23],
                 july: [3, 13, 19, 20, 21, 25, 26, 30, 31],
                 august: [10, 16, 17, 18, 21, 22, 27, 28, 31]
             },
-            balaton: {
+            rebel24: {
                 june: [1, 2, 3, 4, 5, 8, 9, 10, 11, 12, 14, 15, 16, 17, 18, 19, 22, 23, 24, 25, 26, 28, 29, 30],
                 july: [1, 2, 5, 6, 7, 8, 9, 10, 14, 15, 16, 17, 19, 20, 21, 22, 23, 24, 27, 28, 29],
                 august: [3, 4, 5, 6, 7, 10, 11, 12, 13, 14, 25, 26, 27, 28, 29, 30, 31]
             },
-            abbe: {
+            dehler86: {
                 june: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 14, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 30],
                 july: [1, 2, 3, 5, 6, 7, 8, 9, 10, 13, 14, 15, 20, 21, 22, 23, 24, 25],
                 august: [3, 4, 5, 6, 7, 8, 11, 12, 14, 20, 21, 22, 23, 27, 28, 29, 30, 31]
             }
         };
 
-        const selections = {
-            rebell: new Set(),
-            balaton: new Set(),
-            abbe: new Set()
+        const state = {
+            selectedShip: null,
+            startDate: null,
+            endDate: null,
+            bookingType: 'own_tag',
+            notes: '',
+            bookings: {}
         };
 
-        const dayShips = {};
+        const MEMBERSHIP_DAYS = 6;
+        const EXTRA_SHIP_PRICE_LOW = 2500;
+        const EXTRA_SHIP_PRICE_HIGH = 5000;
+        const EXTRA_SHIP_MAX_DAYS = 2;
 
-        function getAvailableShips(day, month) {
-            const available = [];
-            if (data.rebell[month].includes(day)) available.push({ name: 'rebell', label: 'Rebell' });
-            if (data.balaton[month].includes(day)) available.push({ name: 'balaton', label: 'Balaton21' });
-            if (data.abbe[month].includes(day)) available.push({ name: 'abbe', label: 'Abbé' });
-            return available;
+        function getAvailableDays(shipId, month) {
+            return bookingData[shipId][month] || [];
         }
 
-        function isFree(day, month) {
-            return getAvailableShips(day, month).length > 0;
+        function isFree(shipId, day, month) {
+            return getAvailableDays(shipId, month).includes(day);
         }
 
         function getFirstDay(month, year) {
             return new Date(year, month - 1, 1).getDay();
         }
 
-        function getDays(month) {
-            return month === 'june' ? 30 : 31;
+        function getDaysInMonth(month) {
+            return month === 6 ? 30 : 31;
+        }
+
+        function getDaysBetween(start, end) {
+            return Math.floor((end - start) / (1000 * 60 * 60 * 24)) + 1;
+        }
+
+        function getMonthName(month) {
+            const names = ['Június', 'Július', 'Augusztus'];
+            return names[month - 6];
+        }
+
+        function calculateCost(startDate, endDate, bookingType) {
+            const dayCount = getDaysBetween(startDate, endDate);
+
+            if (bookingType === 'own_tag') {
+                const freeDays = Math.min(dayCount, MEMBERSHIP_DAYS);
+                const extraDays = dayCount - freeDays;
+                const extraCost = extraDays > 0 ? extraDays * 100 : 0;
+
+                return {
+                    dayCount,
+                    freeDays,
+                    extraDays,
+                    totalCost: extraCost,
+                    membershipRemaining: MEMBERSHIP_DAYS - freeDays
+                };
+            } else if (bookingType === 'extra_ship') {
+                if (dayCount > EXTRA_SHIP_MAX_DAYS) {
+                    return { error: 'Max 2 nap egymás után!' };
+                }
+
+                const basePrice = dayCount <= MEMBERSHIP_DAYS ? EXTRA_SHIP_PRICE_LOW : EXTRA_SHIP_PRICE_HIGH;
+                const totalCost = dayCount * basePrice;
+
+                return {
+                    dayCount,
+                    totalCost,
+                    pricePerDay: basePrice
+                };
+            }
+        }
+
+        function updateBookingSummary() {
+            const summary = document.getElementById('booking-summary');
+            const shipName = state.selectedShip ? ships[state.selectedShip].name : '-';
+            document.getElementById('summary-ship').textContent = shipName;
+
+            if (state.startDate && state.endDate) {
+                const startStr = state.startDate.toLocaleDateString('hu-HU');
+                const endStr = state.endDate.toLocaleDateString('hu-HU');
+                document.getElementById('summary-dates').textContent = `${startStr} - ${endStr}`;
+
+                const cost = calculateCost(state.startDate, state.endDate, state.bookingType);
+                if (!cost.error) {
+                    document.getElementById('summary-days').textContent = cost.dayCount;
+
+                    if (state.bookingType === 'own_tag') {
+                        document.getElementById('membership-line').style.display = 'flex';
+                        document.getElementById('extra-line').style.display = 'flex';
+                        document.getElementById('summary-membership').textContent = `${cost.freeDays}/${MEMBERSHIP_DAYS}`;
+                        document.getElementById('summary-extra').textContent = cost.extraDays > 0 ? `${cost.extraDays} × 100 Ft = ${cost.extraCost} Ft` : '0 Ft';
+                    } else {
+                        document.getElementById('membership-line').style.display = 'none';
+                        document.getElementById('extra-line').style.display = 'flex';
+                        document.getElementById('summary-extra').textContent = `${cost.dayCount} × ${cost.pricePerDay} Ft = ${cost.totalCost} Ft`;
+                    }
+
+                    const totalText = cost.totalCost > 0 ? `${cost.totalCost} Ft` : 'Ingyenes';
+                    document.getElementById('summary-total').textContent = totalText;
+                    document.getElementById('btn-confirm').disabled = false;
+                } else {
+                    document.getElementById('summary-total').textContent = cost.error;
+                    document.getElementById('btn-confirm').disabled = true;
+                }
+            } else {
+                document.getElementById('summary-dates').textContent = '-';
+                document.getElementById('summary-days').textContent = '0';
+                document.getElementById('summary-total').textContent = '0 Ft';
+                document.getElementById('membership-line').style.display = 'none';
+                document.getElementById('extra-line').style.display = 'none';
+                document.getElementById('btn-confirm').disabled = true;
+            }
         }
 
         function updateStats() {
-            const r = selections.rebell.size;
-            const b = selections.balaton.size;
-            const a = selections.abbe.size;
+            let balCount = 0, rebCount = 0, dehCount = 0;
 
-            document.getElementById('stat-rebell').textContent = r;
-            document.getElementById('stat-balaton').textContent = b;
-            document.getElementById('stat-abbe').textContent = a;
-
-            document.getElementById('count-rebell').textContent = r;
-            document.getElementById('count-balaton').textContent = b;
-            document.getElementById('count-abbe').textContent = a;
-        }
-
-        function selectShip(ship, dateKey, dayEl) {
-            if (dayShips[dateKey]) {
-                const oldShip = dayShips[dateKey];
-                const key = `${oldShip}-${dateKey}`;
-                selections[oldShip].delete(key);
+            for (const key in state.bookings) {
+                const booking = state.bookings[key];
+                if (booking.ship === 'balaton21') balCount++;
+                else if (booking.ship === 'rebel24') rebCount++;
+                else if (booking.ship === 'dehler86') dehCount++;
             }
 
-            dayShips[dateKey] = ship;
-            const key = `${ship}-${dateKey}`;
-            selections[ship].add(key);
-
-            dayEl.classList.add('day-selected');
-            updateStats();
-
-            const dropdown = document.getElementById('dropdown');
-            dropdown.classList.remove('active');
+            document.getElementById('stat-balaton').textContent = balCount;
+            document.getElementById('stat-rebel').textContent = rebCount;
+            document.getElementById('stat-dehler').textContent = dehCount;
         }
 
-        function getWeekdayIndex(day, month) {
-            const monthNum = month === 'june' ? 6 : month === 'july' ? 7 : 8;
-            const firstDay = (getFirstDay(monthNum, 2026) + 6) % 7;
-            const dayIndex = (firstDay + (day - 1)) % 7;
-            return dayIndex;
+        function dayKey(year, month, day) {
+            return `${year}-${month}-${day}`;
         }
 
-        function showDropdown(event, day, month, dayEl) {
-            const available = getAvailableShips(day, month);
+        function selectDateRange(startDate) {
+            if (!state.selectedShip) {
+                alert('Válassz egy hajót először!');
+                return;
+            }
+
+            if (!state.startDate || (state.startDate && state.endDate)) {
+                state.startDate = startDate;
+                state.endDate = null;
+            } else if (startDate < state.startDate) {
+                state.startDate = startDate;
+            } else {
+                state.endDate = startDate;
+            }
+
+            renderCalendar();
+            updateBookingSummary();
+            document.getElementById('footer').classList.add('active');
+        }
+
+        function selectShip(day, month, monthNum) {
+            if (!isFree(state.selectedShip || 'balaton21', day, month)) {
+                return;
+            }
+
+            const dayEl = event.target;
             const dropdown = document.getElementById('dropdown');
             dropdown.innerHTML = '';
 
-            const ships = [
-                { name: 'rebell', label: 'Rebell' },
-                { name: 'balaton', label: 'Balaton21' },
-                { name: 'abbe', label: 'Abbé' }
-            ];
-
-            const dateKey = `${month}-${day}`;
-            const selectedShip = dayShips[dateKey];
-
-            ships.forEach(ship => {
-                const item = document.createElement('div');
-                item.className = 'dropdown-item';
-                item.textContent = ship.label;
-
-                const isAvailable = available.some(s => s.name === ship.name);
-                
-                if (!isAvailable) {
-                    item.classList.add('unavailable');
-                } else {
-                    if (selectedShip === ship.name) {
-                        item.classList.add('selected');
-                    }
-                    
+            const shipList = ['balaton21', 'rebel24', 'dehler86'];
+            shipList.forEach(shipId => {
+                if (isFree(shipId, day, month)) {
+                    const item = document.createElement('div');
+                    item.className = 'dropdown-item';
+                    item.textContent = ships[shipId].name;
                     item.addEventListener('click', () => {
-                        selectShip(ship.name, dateKey, dayEl);
+                        state.selectedShip = shipId;
+                        const dateObj = new Date(2026, monthNum - 1, day);
+                        selectDateRange(dateObj);
+                        dropdown.classList.remove('active');
                     });
+                    dropdown.appendChild(item);
                 }
-
-                dropdown.appendChild(item);
             });
 
-            const weekdayIndex = getWeekdayIndex(day, month);
             const rect = dayEl.getBoundingClientRect();
-            const dropdownHeight = dropdown.offsetHeight || 120;
-
-            if (weekdayIndex <= 2) {
-                dropdown.style.left = (rect.right + 8) + 'px';
-                dropdown.style.right = 'auto';
-            } else {
-                dropdown.style.right = (window.innerWidth - rect.left + 8) + 'px';
-                dropdown.style.left = 'auto';
-            }
-
-            dropdown.style.top = (rect.top + rect.height / 2 - dropdownHeight / 2) + 'px';
+            dropdown.style.left = (rect.left + window.scrollX) + 'px';
+            dropdown.style.top = (rect.bottom + window.scrollY + 4) + 'px';
             dropdown.classList.add('active');
         }
 
         function renderCalendar() {
             const body = document.getElementById('calendar-body');
+            body.innerHTML = '';
+
             const months = [
-                { name: 'Június', key: 'june', num: 6 },
-                { name: 'Július', key: 'july', num: 7 },
-                { name: 'Augusztus', key: 'august', num: 8 }
+                { name: 'Június', num: 6, key: 'june' },
+                { name: 'Július', num: 7, key: 'july' },
+                { name: 'Augusztus', num: 8, key: 'august' }
             ];
 
             months.forEach(m => {
@@ -590,27 +723,36 @@
                     grid.appendChild(empty);
                 }
 
-                const days = getDays(m.key);
+                const days = getDaysInMonth(m.key);
                 for (let day = 1; day <= days; day++) {
                     const dayEl = document.createElement('div');
                     dayEl.className = 'day';
                     dayEl.textContent = day;
-                    dayEl.dataset.day = day;
-                    dayEl.dataset.month = m.key;
 
-                    const dateKey = `${m.key}-${day}`;
-                    if (dayShips[dateKey]) {
-                        dayEl.classList.add('day-selected');
-                    }
+                    const dateObj = new Date(2026, m.num - 1, day);
+                    const free = isFree(state.selectedShip || 'balaton21', day, m.key);
 
-                    if (isFree(day, m.key)) {
+                    if (free) {
                         dayEl.classList.add('day-free');
                         dayEl.addEventListener('click', (e) => {
                             e.stopPropagation();
-                            showDropdown(e, day, m.key, dayEl);
+                            selectShip(day, m.key, m.num);
                         });
                     } else {
                         dayEl.classList.add('day-occupied');
+                    }
+
+                    if (state.startDate && dateObj.getTime() === state.startDate.getTime()) {
+                        dayEl.classList.add('day-start');
+                    }
+
+                    if (state.startDate && state.endDate) {
+                        if (dateObj > state.startDate && dateObj < state.endDate) {
+                            dayEl.classList.add('day-range');
+                        }
+                        if (dateObj.getTime() === state.endDate.getTime()) {
+                            dayEl.classList.add('day-end');
+                        }
                     }
 
                     grid.appendChild(dayEl);
@@ -621,17 +763,61 @@
             });
         }
 
-        document.getElementById('reset-btn').addEventListener('click', () => {
-            selections.rebell.clear();
-            selections.balaton.clear();
-            selections.abbe.clear();
-            Object.keys(dayShips).forEach(k => delete dayShips[k]);
+        document.getElementById('booking-type').addEventListener('change', (e) => {
+            state.bookingType = e.target.value;
+            updateBookingSummary();
+        });
 
-            document.querySelectorAll('.day-selected').forEach(el => {
-                el.classList.remove('day-selected');
-            });
+        document.getElementById('notes-field').addEventListener('change', (e) => {
+            state.notes = e.target.value;
+        });
+
+        document.getElementById('btn-confirm').addEventListener('click', () => {
+            if (!state.startDate || !state.endDate || !state.selectedShip) {
+                alert('Válassz dátumokat és hajót!');
+                return;
+            }
+
+            const cost = calculateCost(state.startDate, state.endDate, state.bookingType);
+            if (cost.error) {
+                alert(cost.error);
+                return;
+            }
+
+            const bookingId = `BK-${Date.now()}`;
+            state.bookings[bookingId] = {
+                ship: state.selectedShip,
+                startDate: state.startDate,
+                endDate: state.endDate,
+                bookingType: state.bookingType,
+                notes: state.notes,
+                cost: cost.totalCost,
+                createdAt: new Date()
+            };
+
+            alert(`✅ Foglalás sikeres!\nID: ${bookingId}\nDíj: ${cost.totalCost} Ft`);
+
+            state.startDate = null;
+            state.endDate = null;
+            state.notes = '';
+            document.getElementById('notes-field').value = '';
+            document.getElementById('footer').classList.remove('active');
+            document.getElementById('booking-type').value = 'own_tag';
+            state.bookingType = 'own_tag';
 
             updateStats();
+            renderCalendar();
+            updateBookingSummary();
+        });
+
+        document.getElementById('btn-cancel').addEventListener('click', () => {
+            state.startDate = null;
+            state.endDate = null;
+            state.notes = '';
+            document.getElementById('notes-field').value = '';
+            document.getElementById('footer').classList.remove('active');
+            renderCalendar();
+            updateBookingSummary();
         });
 
         document.addEventListener('click', (e) => {
@@ -641,7 +827,9 @@
             }
         });
 
+        state.selectedShip = 'balaton21';
         renderCalendar();
+        updateStats();
     </script>
 </body>
 </html>
